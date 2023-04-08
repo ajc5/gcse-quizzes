@@ -1,4 +1,4 @@
-# uk-exams
+# gcse-quizzes
 
 [Try it!](https://ajc5.github.io/uk-exams)
 
