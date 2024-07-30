@@ -44,7 +44,7 @@
 </head>
 <body style="font-family: Arial">
 	<div style="width: 100%; text-align: center;">
-		<h1>GCSE Quizzes by Topic and Past Papers</h1>
+		<h1>GCSE - Topic-based Quizzes and Past Papers</h1>
 	</div>
 	<div class="grid" id="grid">
 	</div>
@@ -67,7 +67,7 @@
 <script>
 	let grid = document.getElementById("grid");
 	let footer = document.getElementById("subjectFooter");
-	let subTopics = "";
+	let quizList = "";
 	let subject = ""
 	let subjectSourceQuiz = ""
 	let subjectCount = 0;
@@ -86,6 +86,7 @@
 	let hiddenSubjects = {}
 	let quizzes = getQuizzes();
 	let quizCount = 0;
+	let first = true;
 	for (let i = 0; i < quizzes.length; i++) {
 		let quiz = quizzes[i];
 		if (quiz.Subject !== "") {
@@ -97,7 +98,8 @@
 				let topic = quiz["Topic"];
 				if (quiz["Topic Source Quiz"] !== "")
 					topic = getLinks(topic, quiz["Topic Source Quiz"], "topicLink")
-				subTopics += `<h4>${topic}</h4>`;
+				quizList += `${first ? '' : '</ol>'}<li><h4>${topic}</h4></li><ol>`;
+				first = false;
 			}
       // sub-topic
 			let quizLinks = quiz['Quiz'] !== "" ? quiz['Quiz'] : quiz['Source Quiz'];
@@ -106,22 +108,24 @@
 			let subTopic = `${quiz["Sub-Topic"]} ${tier}`
 			quizLinks = quizLinks == '' ? subTopic : getLinks(subTopic, quizLinks);
 			if (quiz["Sub-Topic"] !== "") {
-				subTopics += `<li class="${todo}">${quizLinks}</li>`;
+				quizList += `<li class="${todo}">${quizLinks}</li>`;
 				if (quizLinks.indexOf('href=') > 0)
 					quizCount++;
 			}
 			let ni = i + 1;
+			// after last quiz in subject
 			if (ni == quizzes.length || quizzes[ni].Subject !== "") {
 				let item = document.createElement('div');
 				item.className = "item";
 				let subjectTitle = subject;
 				if (subjectSourceQuiz !== "")
 					subjectTitle = getLinks(subjectTitle, subjectSourceQuiz, "subjectLink")
-				item.innerHTML = `<h3>${subjectTitle}</h3><ul>${subTopics}</ul>`;
+				item.innerHTML = `<h3>${subjectTitle}</h3><ol>${quizList}</ol></ol>`;
 				grid.appendChild(item);
 				displayedSubjects[subject] = item
 				subjectCount++;
-				subTopics = "";
+				quizList = "";
+				first = true;
 			}
 		} else if (!hiddenSubjects[subject]) {
 				hiddenSubjects[subject] = true;
@@ -138,7 +142,7 @@
 	}
 	for (let subject of Object.keys(linksBySubj)) {
 		let links = linksBySubj[subject]
-		displayedSubjects[subject].innerHTML += `<h4>Past Papers</h4><ul>${links}<ul>`
+		displayedSubjects[subject].innerHTML += `<h4>Past Papers</h4><ol>${links}<ol>`
 	}
 	for (let hiddenSubject of Object.keys(hiddenSubjects)) {
 		footer.innerHTML += hiddenSubject + " | ";
